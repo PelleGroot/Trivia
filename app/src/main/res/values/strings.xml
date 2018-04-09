@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Trivia</string>
+    <string name="Difficulty">Difficulty: </string>
 </resources>
