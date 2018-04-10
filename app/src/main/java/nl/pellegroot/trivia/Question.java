@@ -7,7 +7,6 @@ public class Question implements Serializable {
 
     String question;
     int category_id;
-    int difficulty;
     String correctAnswer;
 
     public String getQuestion() {
@@ -24,14 +23,6 @@ public class Question implements Serializable {
 
     public void setQuestion(String question) {
         this.question = question;
-    }
-
-    public int getDifficulty() {
-        return difficulty;
-    }
-
-    public void setDificulty(int dificulty) {
-        this.difficulty = dificulty;
     }
 
     public String getCorrectAnswer() {

@@ -69,11 +69,9 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
         gameQuestion = question;
 
         TextView question_field = (TextView) findViewById(R.id.question_id);
-        TextView difficulty_field= (TextView) findViewById(R.id.dif_id);
         TextView category_field = (TextView) findViewById(R.id.cat_id);
 
         question_field.setText(gameQuestion.getQuestion());
-        difficulty_field.setText(String.format(Locale.getDefault(),"%d", gameQuestion.getDifficulty()));
         category_field.setText(String.format(Locale.getDefault(),"%d", gameQuestion.getCategory_id()));
     }
 

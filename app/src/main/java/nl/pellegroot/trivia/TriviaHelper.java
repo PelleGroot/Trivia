@@ -43,7 +43,6 @@ public class TriviaHelper implements Response.Listener<JSONArray>, Response.Erro
                 question.setQuestion(jsonObject.getString("question"));
                 question.setCorrectAnswer(jsonObject.getString("answer"));
                 question.setCategory_id(jsonObject.getInt("category_id"));
-//                question.setDificulty(jsonObject.getInt("difficulty"));
                 Log.d("onResponse: ", question.getCorrectAnswer());
             }
 
