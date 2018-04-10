@@ -15,7 +15,9 @@ import org.json.JSONObject;
 
 public class TriviaHelper implements Response.Listener<JSONArray>, Response.ErrorListener {
     public Context context;
-    public Callback activity;
+    public Callback callback;
+    public Question question = new Question();
+    public int score;
 
     public interface Callback{
         void gotQuestion(Question question);
@@ -29,36 +31,35 @@ public class TriviaHelper implements Response.Listener<JSONArray>, Response.Erro
 
     @Override
     public void onErrorResponse(VolleyError error) {
-        Log.d("onErrorResponse: ", " " + error);
-        activity.gotError(error.getMessage());
+        callback.gotError(error.getMessage());
     }
 
     @Override
     public void onResponse(JSONArray response) {
-        Question question = new Question();
-
         try{
 
             for(int i=0; i<response.length(); i++){
                 JSONObject jsonObject = response.getJSONObject(i);
                 question.setQuestion(jsonObject.getString("question"));
-                question.setDificulty(jsonObject.getInt("difficulty"));
                 question.setCorrectAnswer(jsonObject.getString("answer"));
                 question.setCategory_id(jsonObject.getInt("category_id"));
+//                question.setDificulty(jsonObject.getInt("difficulty"));
+                Log.d("onResponse: ", question.getCorrectAnswer());
             }
 
         }catch(JSONException e){
             e.printStackTrace();
         }
-        activity.gotQuestion(question);
+        callback.gotQuestion(question);
     }
 
     public void getQuestion(Callback activityGame){
-        activity = activityGame;
+        callback = activityGame;
 
         RequestQueue queue = Volley.newRequestQueue(context);
 
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest("http://jservice.io/api/random", this, this);
         queue.add(jsonArrayRequest);
     }
+
 }
