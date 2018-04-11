@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,11 +16,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Logger;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class GameActivity extends AppCompatActivity implements TriviaHelper.Callback {
     public Context context;
-    public TriviaHelper triviaHelper;
+    public TriviaHelper triviaHelper = new TriviaHelper(this);
     public TriviaHelper.Callback callback = this;
     public int score = 0;
     public Question gameQuestion;
@@ -35,25 +36,28 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-
-        TriviaHelper triviaHelper = new TriviaHelper(this);
         triviaHelper.getQuestion(callback);
+
+        User pellegroot = new User();
+        pellegroot.setNickname("pellegroot");
 
         // test firebase DB
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         database.setLogLevel(Logger.Level.DEBUG);
 
-        DatabaseReference myRef = database.getReference("message");
-        myRef.setValue("Hello, World!");
+        DatabaseReference usersRef = database.getReference("users");
+        final Map<String, User> users = new HashMap<>();
+        users.put("PelGro", pellegroot);
+        usersRef.setValue(users);
 
         // Read from the database
-        myRef.addValueEventListener(new ValueEventListener() {
+        usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                Log.d("On Data Change", "Value is: " + value);
+//                String value = dataSnapshot.getValue(String.class);
+//                Log.d("On Data Change", "Value is: " + value);
             }
 
             @Override
@@ -70,9 +74,11 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
 
         TextView question_field = (TextView) findViewById(R.id.question_id);
         TextView category_field = (TextView) findViewById(R.id.cat_id);
+        TextView score_field = (TextView) findViewById(R.id.AG_score);
 
         question_field.setText(gameQuestion.getQuestion());
         category_field.setText(String.format(Locale.getDefault(),"%d", gameQuestion.getCategory_id()));
+        score_field.setText(String.format(Locale.getDefault(),"%d",score));
     }
 
     @Override
@@ -83,20 +89,25 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
         toast.show();
     }
 
-    public void onClick(View view){
-        Button answerButton = (Button) findViewById(view.getId());
+    public void onSubmitClick(View view){
         EditText answerField = (EditText) findViewById(R.id.answer_field);
-        String answer = answerField.getText().toString();
+        String answer = answerField.getText().toString().toLowerCase();
 
-        if (answer.equals(gameQuestion.getCorrectAnswer())){
+        if (answer.equals(gameQuestion.getCorrectAnswer().toLowerCase())){
+
             score += 1;
             Log.d("score", "onClick: " + score);
-//            triviaHelper.getQuestion(callback);
+            triviaHelper.getQuestion(callback);
         }
         else{
             int duration = Toast.LENGTH_SHORT;
             Toast toast = Toast.makeText(this, "Wrong answer, try again!",duration);
             toast.show();
         }
+    }
+
+    public void onAnswerSubmitClick(View view){
+        EditText answerfield = (EditText) findViewById(R.id.answer_field);
+        answerfield.setText("");
     }
 }
