@@ -27,6 +27,10 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
     public int score = 0;
     public Question gameQuestion;
 
+    // initiate database
+    public FirebaseDatabase database;
+    public DatabaseReference usersRef;
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -38,16 +42,18 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
         setContentView(R.layout.activity_game);
         triviaHelper.getQuestion(callback);
 
-        User pellegroot = new User();
-        pellegroot.setNickname("pellegroot");
+        // create test user
+        User PelGro = new User();
+        PelGro.setNickname("pellegroot");
 
-        // test firebase DB
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        // set up database
+        database = FirebaseDatabase.getInstance();
         database.setLogLevel(Logger.Level.DEBUG);
+        usersRef = database.getReference("users");
 
-        DatabaseReference usersRef = database.getReference("users");
+
         final Map<String, User> users = new HashMap<>();
-        users.put("PelGro", pellegroot);
+        users.put("PelGro", PelGro);
         usersRef.setValue(users);
 
         // Read from the database
@@ -56,8 +62,9 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-//                String value = dataSnapshot.getValue(String.class);
-//                Log.d("On Data Change", "Value is: " + value);
+//                Object value = dataSnapshot.child("users").child("PelGro").child("highscore").getValue();
+
+                Log.d("On Data Change", " " + dataSnapshot.child("users").child("PelGro").child("highscore").getValue());
             }
 
             @Override
@@ -73,12 +80,12 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
         gameQuestion = question;
 
         TextView question_field = (TextView) findViewById(R.id.question_id);
-        TextView category_field = (TextView) findViewById(R.id.cat_id);
         TextView score_field = (TextView) findViewById(R.id.AG_score);
+        EditText answerfield = (EditText) findViewById(R.id.answer_field);
 
         question_field.setText(gameQuestion.getQuestion());
-        category_field.setText(String.format(Locale.getDefault(),"%d", gameQuestion.getCategory_id()));
-        score_field.setText(String.format(Locale.getDefault(),"%d",score));
+        score_field.setText(String.format(Locale.getDefault(), "%d", score));
+        answerfield.setText("");
     }
 
     @Override
@@ -89,25 +96,19 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
         toast.show();
     }
 
-    public void onSubmitClick(View view){
+    public void onSubmitClick(View view) {
         EditText answerField = (EditText) findViewById(R.id.answer_field);
         String answer = answerField.getText().toString().toLowerCase();
 
-        if (answer.equals(gameQuestion.getCorrectAnswer().toLowerCase())){
-
+        if (answer.equals(gameQuestion.getCorrectAnswer().toLowerCase())) {
             score += 1;
+            usersRef.child("PelGro").child("highscore").setValue(score);
             Log.d("score", "onClick: " + score);
             triviaHelper.getQuestion(callback);
-        }
-        else{
+        } else {
             int duration = Toast.LENGTH_SHORT;
-            Toast toast = Toast.makeText(this, "Wrong answer, try again!",duration);
+            Toast toast = Toast.makeText(this, "Wrong answer, try again!", duration);
             toast.show();
         }
-    }
-
-    public void onAnswerSubmitClick(View view){
-        EditText answerfield = (EditText) findViewById(R.id.answer_field);
-        answerfield.setText("");
     }
 }
