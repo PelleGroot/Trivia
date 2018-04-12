@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,7 +25,7 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
     public Context context;
     public TriviaHelper triviaHelper = new TriviaHelper(this);
     public TriviaHelper.Callback callback = this;
-    public int score = 0;
+    public long score = 0;
     public Question gameQuestion;
 
     // initiate database
@@ -62,9 +63,6 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-//                Object value = dataSnapshot.child("users").child("PelGro").child("highscore").getValue();
-
-                Log.d("On Data Change", " " + dataSnapshot.child("users").child("PelGro").child("highscore").getValue());
             }
 
             @Override
@@ -73,6 +71,34 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
                 Log.w("On cancelled", "Failed to read value.", error.toException());
             }
         });
+
+        usersRef.addChildEventListener(new ChildEventListener(){
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                score = dataSnapshot.child("highscore").getValue(long.class);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     @Override
