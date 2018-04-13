@@ -25,8 +25,10 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
     public Context context;
     public TriviaHelper triviaHelper = new TriviaHelper(this);
     public TriviaHelper.Callback callback = this;
-    public long score = 0;
+    public long score;
     public Question gameQuestion;
+    public String curUser;
+    public User userInfo;
 
     // initiate database
     public FirebaseDatabase database;
@@ -41,28 +43,38 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        triviaHelper.getQuestion(callback);
+
+        curUser = "PelGro";
 
         // create test user
-        User PelGro = new User();
-        PelGro.setNickname("pellegroot");
+//        User PelGro = new User();
+//        PelGro.setNickname("pellegroot");
 
         // set up database
         database = FirebaseDatabase.getInstance();
         database.setLogLevel(Logger.Level.DEBUG);
         usersRef = database.getReference("users");
 
-
-        final Map<String, User> users = new HashMap<>();
-        users.put("PelGro", PelGro);
-        usersRef.setValue(users);
+//        final Map<String, User> users = new HashMap<>();
+//        users.put(curUser, PelGro);
+//        usersRef.setValue(users);
 
         // Read from the database
-        usersRef.addValueEventListener(new ValueEventListener() {
+        usersRef.child("users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    userInfo = new User();
+                    userInfo.setNickname(ds.child(curUser).getValue(User.class).getNickname());
+                    userInfo.setHighscore(ds.child(curUser).getValue(User.class).getHighscore());
+                }
+
+//                if(dataSnapshot.exists()) {
+//                    score = dataSnapshot.child(curUser).getValue(long.class);
+//                    Log.d("OnCreate", "onDataChange: " + dataSnapshot.getValue());
+//                }
             }
 
             @Override
@@ -75,30 +87,27 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
         usersRef.addChildEventListener(new ChildEventListener(){
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 score = dataSnapshot.child("highscore").getValue(long.class);
+                Log.d("pp", "onChildChanged: " + dataSnapshot.child("highscore").getValue(long.class));
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
-
+        triviaHelper.getQuestion(callback);
     }
 
     @Override
@@ -110,8 +119,8 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
         EditText answerfield = (EditText) findViewById(R.id.answer_field);
 
         question_field.setText(gameQuestion.getQuestion());
-        score_field.setText(String.format(Locale.getDefault(), "%d", score));
         answerfield.setText("");
+        score_field.setText(String.format(Locale.getDefault(), "%d", score));
     }
 
     @Override
@@ -127,8 +136,8 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
         String answer = answerField.getText().toString().toLowerCase();
 
         if (answer.equals(gameQuestion.getCorrectAnswer().toLowerCase())) {
-            score += 1;
-            usersRef.child("PelGro").child("highscore").setValue(score);
+                score+=1;
+                usersRef.child(curUser).child("highscore").setValue(score);
             Log.d("score", "onClick: " + score);
             triviaHelper.getQuestion(callback);
         } else {
