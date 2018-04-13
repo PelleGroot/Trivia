@@ -1,6 +1,5 @@
 package nl.pellegroot.trivia;
 
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,7 +8,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,7 +20,6 @@ import java.util.Locale;
 import java.util.Map;
 
 public class GameActivity extends AppCompatActivity implements TriviaHelper.Callback {
-    public Context context;
     public TriviaHelper triviaHelper = new TriviaHelper(this);
     public TriviaHelper.Callback callback = this;
     public long score;
@@ -43,6 +40,7 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        triviaHelper.getQuestion(callback);
 
         curUser = "PelGro";
 
@@ -60,21 +58,17 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
 //        usersRef.setValue(users);
 
         // Read from the database
-        usersRef.child("users").addValueEventListener(new ValueEventListener() {
+        usersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     userInfo = new User();
-                    userInfo.setNickname(ds.child(curUser).getValue(User.class).getNickname());
-                    userInfo.setHighscore(ds.child(curUser).getValue(User.class).getHighscore());
+                    userInfo.setNickname(ds.getValue(User.class).getNickname());
+                    userInfo.setHighscore(ds.getValue(User.class).getHighscore());
+                    score = userInfo.getHighscore();
                 }
-
-//                if(dataSnapshot.exists()) {
-//                    score = dataSnapshot.child(curUser).getValue(long.class);
-//                    Log.d("OnCreate", "onDataChange: " + dataSnapshot.getValue());
-//                }
             }
 
             @Override
@@ -83,31 +77,6 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
                 Log.w("On cancelled", "Failed to read value.", error.toException());
             }
         });
-
-        usersRef.addChildEventListener(new ChildEventListener(){
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                score = dataSnapshot.child("highscore").getValue(long.class);
-                Log.d("pp", "onChildChanged: " + dataSnapshot.child("highscore").getValue(long.class));
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-        triviaHelper.getQuestion(callback);
     }
 
     @Override
