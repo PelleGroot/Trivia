@@ -1,6 +1,5 @@
 package nl.pellegroot.trivia;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,12 +9,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Logger;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
-
 
 public class HighscoreActivity extends AppCompatActivity {
 
@@ -27,8 +23,6 @@ public class HighscoreActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_highscore);
 
-        Intent intent = getIntent();
-
         // initiate and set up the database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersRef = database.getReference("users");
@@ -39,8 +33,10 @@ public class HighscoreActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
+
                 // loop through the snapshot
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
+
                     // get the userinfo and set them in a User class
                     User userInfo = new User();
                     userInfo.setNickname(ds.getValue(User.class).getNickname());
@@ -48,7 +44,7 @@ public class HighscoreActivity extends AppCompatActivity {
                     userlist.add(userInfo);
                 }
 
-                // Set the highscore adapter
+                // Set the highscore adapter here so it does not load before the data is retrieved
                 highscoreAdapter = new HighscoreAdapter(HighscoreActivity.this, R.layout.highscore_item, userlist);
                 ListView scoreboard = (ListView) findViewById(R.id.HS_LV);
                 scoreboard.setAdapter(highscoreAdapter);

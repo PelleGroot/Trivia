@@ -18,7 +18,6 @@ public class HighscoreAdapter extends ArrayAdapter {
     public HighscoreAdapter(@NonNull Context context, int resource,@NonNull ArrayList objects) {
         super(context, resource, objects);
         userlist = objects;
-
     }
 
     @NonNull
@@ -27,12 +26,13 @@ public class HighscoreAdapter extends ArrayAdapter {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.highscore_item, parent, false);
         }
-        // code here
         TextView nameView = (TextView) convertView.findViewById(R.id.HI_name);
         TextView scoreView = (TextView) convertView.findViewById(R.id.HI_score);
 
+        // get the user from the list
         User user = (User) userlist.get(position);
 
+        // set the name and highscore
         nameView.setText(user.getNickname());
         scoreView.setText(String.format(Locale.getDefault(),"%d",user.getHighscore()));
 

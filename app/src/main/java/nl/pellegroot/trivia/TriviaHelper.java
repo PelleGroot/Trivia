@@ -38,11 +38,14 @@ public class TriviaHelper implements Response.Listener<JSONArray>, Response.Erro
         try{
 
             for(int i=0; i<response.length(); i++){
+
+                // get the object
                 JSONObject jsonObject = response.getJSONObject(i);
+
+                // set the returned object to a question class
                 question.setQuestion(jsonObject.getString("question"));
                 question.setCorrectAnswer(jsonObject.getString("answer"));
                 question.setCategory_id(jsonObject.getInt("category_id"));
-                Log.d("onResponse: ", question.getCorrectAnswer());
             }
 
         }catch(JSONException e){

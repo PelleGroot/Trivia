@@ -39,22 +39,13 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
         setContentView(R.layout.activity_game);
         triviaHelper.getQuestion(callback);
 
+        // current user is set to the testuser because of the missing login part
         curUser = "PelGro";
-
-//         create test users
-//        User PelGro = new User();
-//        PelGro.setNickname("pellegroot");
-
 
         // set up database
         database = FirebaseDatabase.getInstance();
         database.setLogLevel(Logger.Level.DEBUG);
         usersRef = database.getReference("users");
-
-        // put test user in the DB
-//        final Map<String, User> users = new HashMap<>();
-//        users.put(curUser, PelGro);
-//        usersRef.setValue(users);
 
         // Read from the database
         usersRef.addValueEventListener(new ValueEventListener() {
@@ -116,7 +107,6 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
                 // if answer is correct, update the score in the db
                 score+=1;
                 usersRef.child(curUser).child("highscore").setValue(score);
-            Log.d("score", "onClick: " + score);
 
             // and create a new question
             triviaHelper.getQuestion(callback);
@@ -130,6 +120,8 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
         }
     }
     public void onHighscoreClick (View view){
+
+        // start the highscore view
         Intent intent = new Intent(GameActivity.this, HighscoreActivity.class);
         startActivity(intent);
     }
