@@ -54,6 +54,7 @@ public class HighscoreActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError error) {
                 // Failed to read value
                 Log.w("On cancelled", "Failed to read value.", error.toException());
+                //TODO: Let the user know something went wrong
             }
         });
     }

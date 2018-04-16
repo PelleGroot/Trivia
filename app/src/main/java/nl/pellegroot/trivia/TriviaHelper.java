@@ -46,10 +46,12 @@ public class TriviaHelper implements Response.Listener<JSONArray>, Response.Erro
                 question.setQuestion(jsonObject.getString("question"));
                 question.setCorrectAnswer(jsonObject.getString("answer"));
                 question.setCategory_id(jsonObject.getInt("category_id"));
+                Log.d("antwoord", "onResponse: " + question.getCorrectAnswer());
             }
 
         }catch(JSONException e){
             e.printStackTrace();
+            callback.gotError("Something went wrong");
         }
         callback.gotQuestion(question);
     }
