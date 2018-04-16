@@ -1,5 +1,6 @@
 package nl.pellegroot.trivia;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,7 +28,6 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
     public Question gameQuestion;
     public String curUser;
     public User userInfo;
-    public ArrayList<User> userlist = new ArrayList<>();
 
     // initiate database
     public FirebaseDatabase database;
@@ -128,5 +128,9 @@ public class GameActivity extends AppCompatActivity implements TriviaHelper.Call
             Toast toast = Toast.makeText(this, "Wrong answer, try again!", duration);
             toast.show();
         }
+    }
+    public void onHighscoreClick (View view){
+        Intent intent = new Intent(GameActivity.this, HighscoreActivity.class);
+        startActivity(intent);
     }
 }

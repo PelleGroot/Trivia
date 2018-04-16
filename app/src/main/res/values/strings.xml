@@ -3,6 +3,6 @@
     <string name="Submit">Submit answer </string>
     <string name="Category">Category: </string>
     <string name="name">Name: </string>
-    <string name="highscore">Highscores</string>
+    <string name="highscore">Highscore:</string>
     <string name="score">Score: </string>
 </resources>

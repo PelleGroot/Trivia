@@ -9,10 +9,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class HighscoreAdapter extends ArrayAdapter {
+import java.util.ArrayList;
+import java.util.Locale;
 
-    public HighscoreAdapter(@NonNull Context context, int resource) {
-        super(context, resource);
+public class HighscoreAdapter extends ArrayAdapter {
+    public ArrayList<User> userlist;
+
+    public HighscoreAdapter(@NonNull Context context, int resource,@NonNull ArrayList objects) {
+        super(context, resource, objects);
+        userlist = objects;
 
     }
 
@@ -26,7 +31,10 @@ public class HighscoreAdapter extends ArrayAdapter {
         TextView nameView = (TextView) convertView.findViewById(R.id.HI_name);
         TextView scoreView = (TextView) convertView.findViewById(R.id.HI_score);
 
+        User user = (User) userlist.get(position);
 
+        nameView.setText(user.getNickname());
+        scoreView.setText(String.format(Locale.getDefault(),"%d",user.getHighscore()));
 
         return convertView;
     }

@@ -17,7 +17,6 @@ public class TriviaHelper implements Response.Listener<JSONArray>, Response.Erro
     public Context context;
     public Callback callback;
     public Question question = new Question();
-    public int score;
 
     public interface Callback{
         void gotQuestion(Question question);
